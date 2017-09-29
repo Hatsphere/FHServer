@@ -29,18 +29,22 @@ ref.on("child_added", function (snapshot, prevChildKey) {
   // needs to be totally updated for receiving notifications/data
   // messages and also payload
   var data = snapshot.val()
-  admin.messaging().sendToDevice(regToken, payload, options)
-    .then(function (response) {
-      console.log("Message Sent Successfully")
-    })
-    .catch(function (error) {
-      console.error(error)
-    })
+  // admin.messaging().sendToDevice(regToken, payload, options)
+  //   .then(function (response) {
+  //     console.log("Message Sent Successfully")
+  //   })
+  //   .catch(function (error) {
+  //     console.error(error)
+  //   })
 })
 
 // listener for child_removed and gets the snapshot of that removed child
 ref.on("child_removed", function (snapshot) {
   console.log("child_removed: " + snapshot.val())
+})
+
+router.get('/', function (req, res, next) {
+  res.send('index.jade')
 })
 
 router.get('/db', function (req, res, next) {

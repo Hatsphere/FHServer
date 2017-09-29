@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var app = require('../app');
+var app = require('../server');
 var debug = require('debug')('app:server');
 var http = require('http');
 
@@ -12,7 +12,7 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.OPENSHIFT_NODEJS_PORT || '3000');
+var port = normalizePort(process.env.OPENSHIFT_NODEJS_PORT || '8080');
 var ip = process.env.OPENSHIFT_NODEJS_IP ||  "127.0.0.1";
 app.set('port', port)
 app.set('ip', ip)
