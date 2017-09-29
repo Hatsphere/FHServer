@@ -5,10 +5,12 @@ var admin = require('../helpers/firebaseAdmin');
 var db = admin.database();
 var ref = db.ref("/");
 
+// child node changed/updated
 ref.on("child_changed", function (snapshot) {
   console.log("child_changed: " + snapshot.val())
 })
 
+// child added at the reference
 ref.on("child_added", function (snapshot, prevChildKey) {
   console.log("child_added: " + snapshot.val())
   var payload = {
@@ -23,7 +25,10 @@ ref.on("child_added", function (snapshot, prevChildKey) {
     timeToLive: 60 * 60 * 24
   };
 
-  var regToken = 'c6SbvOo94cE:APA91bFJbsBZHEtJWTSrgDI_9XOFTF26lo9lBKMRT3lgiAfUGb6TCH6bwYuKila5ogouZX1bUtbJgvkM3b10Um0cGSq5TVVoizZlElfCCsvaK2QkdKNUbdRs2rXJpw5Q20GK6tohPHu4'
+  // regToken to be fetched (from the firebase server)
+  // needs to be totally updated for receiving notifications/data
+  // messages and also payload
+  var data = snapshot.val()
   admin.messaging().sendToDevice(regToken, payload, options)
     .then(function (response) {
       console.log("Message Sent Successfully")
@@ -33,6 +38,7 @@ ref.on("child_added", function (snapshot, prevChildKey) {
     })
 })
 
+// listener for child_removed and gets the snapshot of that removed child
 ref.on("child_removed", function (snapshot) {
   console.log("child_removed: " + snapshot.val())
 })
@@ -55,7 +61,7 @@ router.post('/send', function (req, res, next) {
       console.error(error.message)
     } else {
       console.log("Data Sent Successfully")
-      res.json("{ Code: 200 }")
+      res.json({Code: 200})
     }
   })
 })
