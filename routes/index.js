@@ -70,4 +70,19 @@ router.post('/send', function (req, res, next) {
   })
 })
 
+router.post('/updateToken', function (req, res, next) {
+  var uid = req.body.uid
+  var token = req.body.token
+  ref.child('Tokens').child(uid).set({
+    Token: token
+  }, function (error) {
+    if (error) {
+      console.error(error)
+    } else {
+      console.log("Token Updated Successfully")
+      res.json({Code: 200, Status: "Updated Successfully"})
+    }
+  })
+})
+
 module.exports = router;
