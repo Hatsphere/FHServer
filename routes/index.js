@@ -4,6 +4,8 @@ var router = express.Router();
 var admin = require('../helpers/firebaseAdmin');
 var db = admin.database();
 var ref = db.ref("/");
+var regToken = "co3KXhI5D98:APA91bF8KRcg6xc7EC9G24ZC_32tdiBhExgYwEm8X_dH_sGQgJQIxhtI5AH54s6nrUXDG9NYrPKb7fze-f-rdl3p_gptHu2TpPZfxvQg4ZmCH35huAh4HlRScPhP3pdUlH9rG2rnCNpb"
+
 
 // child node changed/updated
 ref.on("child_changed", function (snapshot) {
@@ -14,22 +16,16 @@ ref.on("child_changed", function (snapshot) {
 ref.on("child_added", function (snapshot, prevChildKey) {
   console.log("child_added: " + snapshot.val())
   var payload = {
-    notification: {
-      title: snapshot.val().toString(),
-      body: 'Notification Message'
+    data: {
+      title: "Dhinchakk",
+      body: "Message"
     }
-  }
-
-  var options = {
-    priority: "high",
-    timeToLive: 60 * 60 * 24
   };
 
   // regToken to be fetched (from the firebase server)
   // needs to be totally updated for receiving notifications/data
   // messages and also payload
-  var regToken = "co3KXhI5D98:APA91bF8KRcg6xc7EC9G24ZC_32tdiBhExgYwEm8X_dH_sGQgJQIxhtI5AH54s6nrUXDG9NYrPKb7fze-f-rdl3p_gptHu2TpPZfxvQg4ZmCH35huAh4HlRScPhP3pdUlH9rG2rnCNpb"
-  admin.messaging().sendToDevice(regToken, payload, options)
+  admin.messaging().sendToDevice(regToken, payload)
     .then(function (response) {
       console.log("Message Sent Successfully")
     })
@@ -73,6 +69,7 @@ router.post('/send', function (req, res, next) {
 router.post('/updateToken', function (req, res, next) {
   var uid = req.body.uid
   var token = req.body.token
+  regToken = token
   ref.child('Tokens').child(uid).set({
     Token: token
   }, function (error) {
