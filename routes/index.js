@@ -15,7 +15,7 @@ ref.on("child_added", function (snapshot, prevChildKey) {
   console.log("child_added: " + snapshot.val())
   var payload = {
     notification: {
-      title: snapshot.toJSON().toString(),
+      title: snapshot.val().toString(),
       body: 'Notification Message'
     }
   }
@@ -28,14 +28,14 @@ ref.on("child_added", function (snapshot, prevChildKey) {
   // regToken to be fetched (from the firebase server)
   // needs to be totally updated for receiving notifications/data
   // messages and also payload
-  var data = snapshot.val()
-  // admin.messaging().sendToDevice(regToken, payload, options)
-  //   .then(function (response) {
-  //     console.log("Message Sent Successfully")
-  //   })
-  //   .catch(function (error) {
-  //     console.error(error)
-  //   })
+  var regToken = "co3KXhI5D98:APA91bF8KRcg6xc7EC9G24ZC_32tdiBhExgYwEm8X_dH_sGQgJQIxhtI5AH54s6nrUXDG9NYrPKb7fze-f-rdl3p_gptHu2TpPZfxvQg4ZmCH35huAh4HlRScPhP3pdUlH9rG2rnCNpb"
+  admin.messaging().sendToDevice(regToken, payload, options)
+    .then(function (response) {
+      console.log("Message Sent Successfully")
+    })
+    .catch(function (error) {
+      console.error(error)
+    })
 })
 
 // listener for child_removed and gets the snapshot of that removed child
