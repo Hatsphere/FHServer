@@ -1,49 +1,73 @@
-var express = require('express');
+var express = require('express'),
+  fs = require('fs'),
+  multer = require('multer');
 var router = express.Router();
-
 var admin = require('../helpers/firebaseAdmin');
 var db = admin.database();
 var ref = db.ref("/");
-var regToken = "eAk8NtEL7WQ:APA91bFNRFoP7Djaw5Malx-M6gPe9x-QYab5N9ypLSaMVpfK2n-P3T_6pMnY_MHqSCorOnbOIeEIa_85QOuCExnFdkH7c9C2CTgEOfV4BMy9RU3r2UHVmW7vu_4Tq9meZjboQpF621aw"
 
-
-// child node changed/updated
-ref.on("child_changed", function (snapshot) {
-  console.log("child_changed: " + snapshot.val())
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    console.log(file)
+    cb(null, file.fieldname + '-' + Date.now() + '.' + file.originalname.split('.')[1])
+  }
 })
 
-// child added at the reference
-ref.on("child_added", function (snapshot, prevChildKey) {
-  console.log("child_added: " + snapshot.val())
-  var payload = {
-    notification: {
-      title: "Message",
-      body: "Message"
+var upload = multer({ storage: storage }).any()
+
+
+router.post('/upload', function (req, res, next) {
+  upload(req, res, function (err) {
+    if (err) {
+      console.error(err)
+    } else {
+      console.log("Image uploaded Successfully")
+      res.json({response: 200})
     }
-  };
+  })
+});
 
-  var options = {
-    priority: "high",
-    timeToLive: 60 * 60 * 24
-  };
 
-  // regToken to be fetched (from the firebase server)
-  // needs to be totally updated for receiving notifications/data
-  // messages and also payload
-  console.log(regToken)
-  admin.messaging().sendToDevice(regToken, payload, options)
-    .then(function (response) {
-      console.log("Message Sent Successfully")
-    })
-    .catch(function (error) {
-      console.error(error)
-    })
-})
-
-// listener for child_removed and gets the snapshot of that removed child
-ref.on("child_removed", function (snapshot) {
-  console.log("child_removed: " + snapshot.val())
-})
+// // child node changed/updated
+// ref.on("child_changed", function (snapshot) {
+//   console.log("child_changed: " + snapshot.val())
+// })
+//
+// // child added at the reference
+// ref.on("child_added", function (snapshot, prevChildKey) {
+//   console.log("child_added: " + snapshot.val())
+//   var payload = {
+//     data: {
+//       title: "Message",
+//       body: "Message"
+//     }
+//   };
+//
+//   var options = {
+//     priority: "high",
+//     timeToLive: 60 * 60 * 24
+//   };
+//
+//   // regToken to be fetched (from the firebase server)
+//   // needs to be totally updated for receiving notifications/data
+//   // messages and also payload
+//   console.log(regToken)
+//   admin.messaging().sendToDevice(regToken, payload, options)
+//     .then(function (response) {
+//       console.log("Message Sent Successfully")
+//     })
+//     .catch(function (error) {
+//       console.error(error)
+//     })
+// })
+//
+// // listener for child_removed and gets the snapshot of that removed child
+// ref.on("child_removed", function (snapshot) {
+//   console.log("child_removed: " + snapshot.val())
+// })
 
 router.get('/', function (req, res, next) {
   res.send('index.jade')
