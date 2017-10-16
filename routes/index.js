@@ -24,8 +24,13 @@ router.post('/upload', function (req, res, next) {
     if (err) {
       console.error(err)
     } else {
-      console.log("Image uploaded Successfully")
-      res.json({response: 200})
+      console.log("Image uploaded Successfully ")
+      console.log(req.files[0])
+      var data = {
+        response: 200,
+        filename: req.files[0].filename
+      }
+      res.sendFile(process.env.PWD + "/" + req.files[0].path)
     }
   })
 });
