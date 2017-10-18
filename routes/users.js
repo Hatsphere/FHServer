@@ -15,6 +15,7 @@ router.get('/', function(req, res, next) {
 });
 
 
+// save seller data to the realtime database
 var saveData = function (userRecord, password, callback) {
   var uid = userRecord.uid;
   rootRef.child("seller/registered/" + uid).set({
@@ -48,6 +49,7 @@ function checkDirectory(directory, callback) {
   })
 }
 
+// Function for checking the directory for profile images
 checkDirectory("uploads/seller/profile/", function (error) {
   if (error) {
     console.error(error)
@@ -56,6 +58,11 @@ checkDirectory("uploads/seller/profile/", function (error) {
   }
 });
 
+
+/*
+* profile image upload function for storing images using multer
+* Image saved will get uploaded to firebase storage using google-storage
+*/
 function imageUpload(uid, req, res) {
   var profileStorage = multer.diskStorage({
     destination: function (req, file, cb) {
