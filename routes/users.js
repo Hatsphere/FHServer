@@ -15,13 +15,13 @@ router.get('/', function(req, res, next) {
 });
 
 
-var saveData = function (userRecord, password) {
+var saveData = function (userRecord, password, callback) {
   var uid = userRecord.uid;
   rootRef.child("seller/registered/" + uid).set({
     password: password
   }, function (error) {
     if (error) {
-      console.error(error);
+      callback(error);
     } else {
       console.log("User pushed");
     }
@@ -121,13 +121,34 @@ router.post('/signUp', function (req, res, next) {
     email: email_,
     password: password_
   }).then(function (userRecord) {
-    console.log("User record created successfully: " + userRecord.uid);
-    status = saveData(userRecord, password_);
-    res.json({response: 200});
+    console.log("Seller created: " + userRecord.uid);
+    saveData(userRecord, password_, function (error) {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log("Pushed Successfully")
+      }
+    })
   }).catch(function (error) {
-    console.error("Error creating user: " + error);
-    res.json({response: 500})
-  })
+    if (error.code === "auth/email-already-exists") {
+      admin.auth().getUserByEmail(email_)
+        .then(function(userRecord) {
+          var uid = userRecord.uid;
+          rootRef.child("seller/registered/" + uid).on("value", function (snapshot) {
+            if (snapshot.val().password === password_) {
+              res.json({response: 200})
+            } else {
+              res.json({response: 500})
+            }
+          });
+        })
+        .catch(function(error) {
+          console.log("Error fetching user data:", error);
+        });
+    } else {
+      res.json({response: 500})
+    }
+  });
 
 });
 
