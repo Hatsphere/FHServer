@@ -116,3 +116,5 @@ fabric.properties
 public/images/
 public/javascripts/
 uploads/
+.vscode-janus-debug
+.vscode/settings.json

@@ -49,7 +49,9 @@ function checkDirectory(directory, callback) {
   })
 }
 
-// Function for checking the directory for profile images
+/* Function for checking the directory for profile images
+* If it doesn't exists, it create that directory recursively
+*/
 checkDirectory("uploads/seller/profile/", function (error) {
   if (error) {
     console.error(error)
@@ -57,6 +59,21 @@ checkDirectory("uploads/seller/profile/", function (error) {
     console.log("Profile Images directory created")
   }
 });
+
+// Function for generation of download link using file
+function downloadLink(file, callback) {
+  file.getSignedUrl({
+      action: 'read',
+      expires: '12-31-2030'
+  }, function(err, url) {
+      if (err) {
+          callback(err);
+      }
+      else {
+          callback(err, url);
+      }
+  });
+}
 
 
 /*
@@ -83,8 +100,14 @@ function imageUpload(uid, req, res) {
         if (err) {
           console.error(err);
         } else {
-          console.log(file);
-          res.json({response: 200})
+          downloadLink(file, function(err, link) {
+            if (err) {
+              console.error(err);
+            } else {
+              console.log(link);
+              res.json({response: 200, downloadLink: link})
+            }
+          });
         }
       })
     }
@@ -183,3 +206,4 @@ router.post('/login', function (req, res, next) {
 
 });
 module.exports = router;
+
