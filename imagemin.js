@@ -1,4 +1,4 @@
-const imagemin = require('imagemin');
+let imagemin = require('imagemin');
 const imageminJpegtran = require('imagemin-jpegtran');
 const imageminPngquant = require('imagemin-pngquant');
  
