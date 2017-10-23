@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@google-cloud/firestore": "^0.8.2",
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
@@ -24,6 +25,8 @@
     "uuid-v4": "^0.1.0"
   },
   "devDependencies": {
-    "eslint-config-google": "^0.9.1"
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-google": "^0.9.1",
+    "eslint-plugin-import": "^2.8.0"
   }
 }

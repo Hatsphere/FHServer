@@ -4,7 +4,8 @@ let admin = require('../helpers/firebaseAdmin');
 let db = admin.database();
 let rootRef = db.ref('/');
 let bucket = admin.storage().bucket();
-let imageOptimize = require('../imagemin')
+let imageOptimize = require('../imagemin');
+let sellerHelper = require('../helpers/sellerHelper');
 
 let mkdirp = require('mkdirp');
 let fs = require('fs');
@@ -97,7 +98,7 @@ function imageUpload(uid, req, res) {
         } else {
             console.log('Image Uploaded Successfully');
             imageOptimize.optimize(req.file.path, req.file.destination, function(file) {
-                console.log('File optimized: ', file.path)
+                console.log('File optimized: ', file.path);
                 bucket.upload(file.path, function(err, file, apiResponse) {
                     if (err) {
                         console.error(err);
@@ -112,7 +113,7 @@ function imageUpload(uid, req, res) {
                         });
                     }
                 });
-            })
+            });
         }
     });
 }
@@ -123,7 +124,6 @@ function imageUpload(uid, req, res) {
 * planId: plan_value
 * address: Address_value
 * contactNo : phone_number_value
-* profileImage to be uploaded with key ; profile_uid
 * uid : Id of the user in firebase
 */
 router.post('/profile/:uid', function(req, res, next) {
@@ -136,11 +136,36 @@ router.post('/profile/:uid', function(req, res, next) {
             let address = req.body.address;
             let contactNo = req.body.contactNo;
 
+            const data = {
+                Name: name,
+                PlanChosen: planChosen,
+                Address: address,
+                ContactNo: contactNo
+            };
+
+            sellerHelper.writeSellerInfo(uid, data, (response) => {
+                if (response == 200) {
+                    res.json({Code: 200, Updated: uid, dataSent: data});
+                } else {
+                    res.json({Code: 500});
+                }
+            });
+
             imageUpload(uid, req, res);
         }
     });
 });
 
+
+router.post('/profile/:uid/image/', (req, res, next) => {
+    let uid = req.params.uid;
+    rootRef.child('seller/registered/' + uid).on('value', function(snapshot) {
+        // Valid seller
+        if (snapshot.exists()) {    
+            imageUpload(uid, req, res);
+        }
+    });
+});
 
 // API endpoint for creation of seller
 router.post('/signUp', function(req, res, next) {
