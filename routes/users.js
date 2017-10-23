@@ -156,7 +156,8 @@ router.post('/profile/:uid', function(req, res, next) {
     });
 });
 
-
+// API endpoint for sending seller image
+// Image key should be profile_<uid>
 router.post('/profile/:uid/image/', (req, res, next) => {
     let uid = req.params.uid;
     rootRef.child('seller/registered/' + uid).on('value', function(snapshot) {
