@@ -181,11 +181,23 @@ router.post('/profile/:uid/image/', (req, res, next) => {
     });
 });
 
+// API endpoint for checking existence of user
+// Checks the email id exists or not
+router.post('/check/email', (req, res, next) => {
+    let email = req.body.email;
+    admin.auth().getUserByEmail(email).then(userRecord => {
+        res.json({code: 201, message: 'User already exists'});
+    }).catch(err => {
+        res.json({code: 200, message: 'User doesnot exists'});
+    });
+});
+
 // API endpoint for creation of seller
 router.post('/signUp', function(req, res, next) {
     let email_ = req.body.email;
     let password_ = req.body.password;
 
+    
     admin.auth().createUser({
         email: email_,
         password: password_,
@@ -205,7 +217,7 @@ router.post('/signUp', function(req, res, next) {
                     let uid = userRecord.uid;
                     rootRef.child('seller/registered/' + uid).on('value', function(snapshot) {
                         if (snapshot.val().password === password_) {
-                            res.json({response: 200});
+                            res.json({response: 200, uid: uid});
                         } else {
                             res.json({response: 500});
                         }
