@@ -76,6 +76,19 @@ function downloadLink(file, callback) {
     });
 }
 
+router.get('/seller/Info/all/:uid', (req, res, next) => {
+    let uid = req.params.uid;
+    sellerHelper.getSellerInfo(uid, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.json({code: 500});
+        } else {
+            console.log('Success get details');
+            res.json({code: 200, data: result});
+        }
+    });
+});
+
 
 /*
 * profile image upload function for storing images using multer
@@ -218,7 +231,7 @@ router.post('/login', function(req, res, next) {
             let uid = userRecord.uid;
             rootRef.child('seller/registered/' + uid).on('value', function(snapshot) {
                 if (snapshot.val().password === password_) {
-                    res.json({response: 200, flag: true});
+                    res.json({response: 200, flag: true, uid: uid});
                 } else {
                     res.json({response: 200, flag: false});
                 }
