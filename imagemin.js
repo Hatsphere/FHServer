@@ -1,18 +1,21 @@
-let imagemin = require('imagemin');
-const imageminJpegtran = require('imagemin-jpegtran');
-const imageminPngquant = require('imagemin-pngquant');
+var sharp=require('sharp');
 
-var optimizeImage = function (path, destination, callback) {
-    imagemin([path], destination + 'build/images', {
-        plugins: [
-            imageminJpegtran({quality: '65-70'}),
-            imageminPngquant({quality: '65-70'})
-        ]
-    }).then(files => {
-        callback(files[0]);
-    });
+
+var optimizeImage=function(destination, callback){
+sharp(inputBuffer)
+	.resizw(500, 500,{
+	kernel: sharp.kernel.lanczos2,
+	interpolator: sharp.interpolator.nohalo
+	})
+	.background('White')
+	.embed()
+	.tofile('Output.webp', destination+'build/image')
+	.then(files => {
+		callback(files[0]);
+	});
+
 }
 
 module.exports = {
-    optimize: optimizeImage
+	optimize: optimizeImage
 }
