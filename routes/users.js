@@ -4,7 +4,6 @@ let admin = require('../helpers/firebaseAdmin');
 let db = admin.database();
 let rootRef = db.ref('/');
 let bucket = admin.storage().bucket();
-let imageOptimize = require('../imagemin');
 let sellerHelper = require('../helpers/sellerHelper');
 
 let mkdirp = require('mkdirp');
@@ -114,22 +113,19 @@ function imageUpload(uid, req, res) {
             console.error(err);
         } else {
             console.log('Image Uploaded Successfully');
-            imageOptimize.optimize(req.file.path, req.file.destination, function(file) {
-                console.log('File optimized: ', file.path);
-                bucket.upload(file.path, function(err, file, apiResponse) {
-                    if (err) {
-                        console.error(err);
-                    } else {
-                        downloadLink(file, function(err, link) {
-                            if (err) {
-                                console.error(err);
-                            } else {
-                                console.log(link);
-                                res.json({response: 200, downloadLink: link});
-                            }
-                        });
-                    }
-                });
+            bucket.upload(req.file.path, function(err, file, apiResponse) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    downloadLink(file, function(err, link) {
+                        if (err) {
+                            console.error(err);
+                        } else {
+                            console.log(link);
+                            res.json({response: 200, downloadLink: link});
+                        }
+                    });
+                }
             });
         }
     });
