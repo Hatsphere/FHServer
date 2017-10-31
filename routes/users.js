@@ -21,6 +21,7 @@ let saveData = function(userRecord, password, callback) {
             callback(error);
         } else {
             console.log('User pushed');
+            callback(null);
         }
     });
 };
@@ -211,8 +212,10 @@ router.post('/signUp', function(req, res, next) {
         saveData(userRecord, password_, function(error) {
             if (error) {
                 console.error(error);
+                res.json({response: 500});
             } else {
                 console.log('Pushed Successfully');
+                res.json({response: 200, uid: userRecord.uid});
             }
         });
     }).catch(function(error) {
