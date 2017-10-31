@@ -11,13 +11,8 @@ let mkdirp = require('mkdirp');
 let fs = require('fs');
 let multer = require('multer');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-    res.send('respond with a resource');
-});
 
-
-// save seller data to the realtime database
+// function to save seller data to the realtime database
 let saveData = function(userRecord, password, callback) {
     let uid = userRecord.uid;
     rootRef.child('seller/registered/' + uid).set({
@@ -76,6 +71,12 @@ function downloadLink(file, callback) {
     });
 }
 
+
+/* API endpoint for fetching the details of a particular seller
+* GET method
+* api url: /seller/info/all/<UID_of_user>
+* return (correct): Block of seller in json
+*/
 router.get('/seller/Info/all/:uid', (req, res, next) => {
     let uid = req.params.uid;
     sellerHelper.getSellerInfo(uid, (err, result) => {
@@ -91,8 +92,11 @@ router.get('/seller/Info/all/:uid', (req, res, next) => {
 
 
 /*
-* profile image upload function for storing images using multer
-* Image saved will get uploaded to firebase storage using google-storage
+* Function for profile image upload function for storing images using multer
+* Image saved will get uploaded to firebase storage using google-storage.
+* Key file name for the multi part request should be profile_<UID_of_user>
+* The image uploaded will get optimized and the optimized image will be store
+* in the bucket.
 */
 function imageUpload(uid, req, res) {
     let profileStorage = multer.diskStorage({
@@ -181,8 +185,13 @@ router.post('/profile/:uid/image/', (req, res, next) => {
     });
 });
 
-// API endpoint for checking existence of user
-// Checks the email id exists or not
+/* API endpoint for checking existence of user
+* Checks the email id exists or not.
+* POST: {
+    email: "Email of the user"
+  }
+* returns the existence of user in the database  
+*/
 router.post('/check/email', (req, res, next) => {
     let email = req.body.email;
     admin.auth().getUserByEmail(email).then(userRecord => {
