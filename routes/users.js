@@ -12,8 +12,7 @@ let multer = require('multer');
 
 
 // function to save seller data to the realtime database
-let saveData = function(userRecord, password, callback) {
-    let uid = userRecord.uid;
+let saveData = function(uid, password, callback) {
     rootRef.child('seller/registered/' + uid).set({
         password: password,
     }, function(error) {
@@ -208,34 +207,24 @@ router.post('/signUp', function(req, res, next) {
         email: email_,
         password: password_,
     }).then(function(userRecord) {
-        console.log('Seller created: ' + userRecord.uid);
-        saveData(userRecord, password_, function(error) {
-            if (error) {
-                console.error(error);
-                res.json({response: 500});
-            } else {
-                console.log('Pushed Successfully');
-                res.json({response: 200, uid: userRecord.uid});
-            }
-        });
+        res.json({response: 200, uid: userRecord.uid});
     }).catch(function(error) {
-        if (error.code === 'auth/email-already-exists') {
-            admin.auth().getUserByEmail(email_)
-                .then(function(userRecord) {
-                    let uid = userRecord.uid;
-                    rootRef.child('seller/registered/' + uid).on('value', function(snapshot) {
-                        if (snapshot.val().password === password_) {
-                            res.json({response: 200, uid: uid});
-                        } else {
-                            res.json({response: 500});
-                        }
-                    });
-                })
-                .catch(function(error) {
-                    console.log('Error fetching user data:', error);
-                });
+        console.error(error);
+        res.json({response: 500, err: error});
+    });
+});
+
+// API endpoint for creation of entry of seller into firestore
+router.post('/push/seller', (req, res, next) => {
+    let password_ = req.body.password;
+    let uid = req.body.uid;
+
+    saveData(uid, password_, err => {
+        if (err) {
+            console.error(err);
+            res.json({response: 500, reason: err});
         } else {
-            res.json({response: 500});
+            res.json({response: 200});
         }
     });
 });
