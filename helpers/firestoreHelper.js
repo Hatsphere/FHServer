@@ -1,7 +1,7 @@
 const Firestore = require('@google-cloud/firestore');
 
 const firestore = new Firestore({
-    projectId: 'testapp-932ba',
+    projectId: 'hatsphere',
     keyFilename: './TestApp-bc5766f47e99.json'
 });
 

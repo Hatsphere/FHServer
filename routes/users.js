@@ -140,10 +140,13 @@ function imageUpload(uid, req, res) {
 * uid : Id of the user in firebase
 */
 router.post('/profile/:uid', function(req, res, next) {
-    let uid = req.params.uid;
-    rootRef.child('seller/registered/' + uid).on('value', function(snapshot) {
-    // Valid seller
+    const userId = req.params.uid;
+    console.log('uid: ', userId);
+    rootRef.child('seller/registered/' + userId).on('value', function(snapshot) {
+        console.log(snapshot.toJSON());
+        // Valid seller
         if (snapshot.exists()) {
+            console.log('Seller authenticated');
             let name = req.body.name;
             let planChosen = req.body.planId;
             let address = req.body.address;
@@ -156,15 +159,17 @@ router.post('/profile/:uid', function(req, res, next) {
                 ContactNo: contactNo
             };
 
-            sellerHelper.writeSellerInfo(uid, data, (response) => {
+            sellerHelper.writeSellerInfo(userId, data, (response) => {
                 if (response == 200) {
-                    res.json({Code: 200, Updated: uid, dataSent: data});
+                    res.json({Code: 200, Updated: userId, dataSent: data});
                 } else {
                     res.json({Code: 500});
                 }
             });
 
-            imageUpload(uid, req, res);
+            // imageUpload(uid, req, res);
+        } else {
+            console.log('Seller unauthenticated');
         }
     });
 });

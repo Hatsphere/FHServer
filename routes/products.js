@@ -15,7 +15,7 @@ router.post('/send/:uid', (req, res, next) => {
     let uid = req.params.uid;
 
     // datastore reference for item
-    const productRef = firestore.doc('seller/registered/' + uid + '/productInfo/');
+    const productRef = firestore.doc('products/' + uid);
 
     let pName = req.body.pName;
     let pPrice = req.body.pPrice;
