@@ -160,7 +160,7 @@ router.post('/profile/:uid', function(req, res, next) {
             };
 
             sellerHelper.writeSellerInfo(userId, data, (response) => {
-                if (response == 200) {
+                if (response === 200) {
                     res.json({Code: 200, Updated: userId, dataSent: data});
                 } else {
                     res.json({Code: 500});
@@ -180,7 +180,7 @@ router.post('/profile/:uid/image/', (req, res, next) => {
     let uid = req.params.uid;
     rootRef.child('seller/registered/' + uid).on('value', function(snapshot) {
         // Valid seller
-        if (snapshot.exists()) {    
+        if (snapshot.exists()) {
             imageUpload(uid, req, res);
         }
     });
@@ -207,7 +207,7 @@ router.post('/signUp', function(req, res, next) {
     let email_ = req.body.email;
     let password_ = req.body.password;
 
-    
+
     admin.auth().createUser({
         email: email_,
         password: password_,
@@ -217,6 +217,22 @@ router.post('/signUp', function(req, res, next) {
         console.error(error);
         res.json({response: 500, err: error});
     });
+});
+
+
+router.get('/getuid', (req, res, next) => {
+    let email = req.query.email;
+    console.log('Email', email);
+
+    admin.auth().getUserByEmail(email)
+        .then(record => {
+            let uid_ = record.uid;
+            res.json({response: 200, uid: uid_});
+        })
+        .catch(err => {
+            console.log(err);
+            res.json({response: 500});
+        });
 });
 
 // API endpoint for creation of entry of seller into firestore

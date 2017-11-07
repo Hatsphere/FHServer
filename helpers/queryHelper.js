@@ -8,12 +8,12 @@ router.get('/test', (req, res, next) => {
     let query = userRef.where('address', '==', '');
 
     userRef.get().then(snapshot => {
-        console.log(snapshot)
+        console.log(snapshot);
     });
 
-    // query.get().then(querySnapshot => {
-    //     console.log(querySnapshot.query);
-    // });
+    query.get().then(querySnapshot => {
+        console.log('query', querySnapshot.query);
+    });
 });
 
 module.exports = router;
