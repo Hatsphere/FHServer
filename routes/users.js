@@ -12,10 +12,10 @@ let multer = require('multer');
 
 
 // function to save seller data to the realtime database
-let saveData = function(uid, password, callback) {
+let saveData = function (uid, password, callback) {
     rootRef.child('seller/registered/' + uid).set({
         password: password,
-    }, function(error) {
+    }, function (error) {
         if (error) {
             callback(error);
         } else {
@@ -30,9 +30,9 @@ let saveData = function(uid, password, callback) {
 * callback : Callback function
 */
 function checkDirectory(directory, callback) {
-    fs.stat(directory, function(err, stats) {
+    fs.stat(directory, function (err, stats) {
         if (err) {
-            mkdirp(directory, function(err) {
+            mkdirp(directory, function (err) {
                 if (err) {
                     callback(err);
                 } else {
@@ -48,7 +48,7 @@ function checkDirectory(directory, callback) {
 /* Function for checking the directory for profile images
 * If it doesn't exists, it create that directory recursively
 */
-checkDirectory('uploads/seller/profile/', function(error) {
+checkDirectory('uploads/seller/profile/', function (error) {
     if (error) {
         console.error(error);
     } else {
@@ -59,7 +59,7 @@ checkDirectory('uploads/seller/profile/', function(error) {
 /* Function for checking the directory for Product images
 * If it doesn't exists, it create that directory recursively
 */
-checkDirectory('uploads/seller/product/images/', function(error) {
+checkDirectory('uploads/seller/product/images/', function (error) {
     if (error) {
         console.error(error);
     } else {
@@ -72,7 +72,7 @@ function downloadLink(file, callback) {
     file.getSignedUrl({
         action: 'read',
         expires: '12-31-2030',
-    }, function(err, url) {
+    }, function (err, url) {
         if (err) {
             callback(err);
         } else {
@@ -92,26 +92,26 @@ router.get('/seller/Info/all/:uid', (req, res, next) => {
     sellerHelper.getSellerInfo(uid, (err, result) => {
         if (err) {
             console.error(err);
-            res.json({code: 500});
+            res.json({ code: 500 });
         } else {
             console.log('Success get details');
-            res.json({code: 200, data: result});
+            res.json({ code: 200, data: result });
         }
     });
 });
 
 router.post('/update/:parameter/:uid', (req, res, next) => {
-	let uid = req.params.uid;
-	let parameter = req.params.parameter.
-    sellerHelper.updateSellerInfo(uid, parameter, (err, result) => {
-        if (err) {
-            console.error(err);
-            res.json({code: 500});
-        } else {
-            console.log('updated details ');
-            res.json({code: 200, data: result});
-        }
-    });
+    let uid = req.params.uid;
+    let parameter = req.params.parameter.
+        sellerHelper.updateSellerInfo(uid, parameter, (err, result) => {
+            if (err) {
+                console.error(err);
+                res.json({ code: 500 });
+            } else {
+                console.log('updated details ');
+                res.json({ code: 200, data: result });
+            }
+        });
 });
 
 /*
@@ -123,30 +123,30 @@ router.post('/update/:parameter/:uid', (req, res, next) => {
 */
 function imageUpload(uid, req, res) {
     let profileStorage = multer.diskStorage({
-        destination: function(req, file, cb) {
+        destination: function (req, file, cb) {
             cb(null, 'uploads/seller/profile/');
         },
-        filename: function(req, file, cb) {
+        filename: function (req, file, cb) {
             cb(null, file.fieldname + '-' + uid + '.' + file.originalname.split('.')[1]);
         },
     });
 
-    let profileImageEndpoint = multer({storage: profileStorage}).single('profile_' + uid);
-    profileImageEndpoint(req, res, function(err) {
+    let profileImageEndpoint = multer({ storage: profileStorage }).single('profile_' + uid);
+    profileImageEndpoint(req, res, function (err) {
         if (err) {
             console.error(err);
         } else {
             console.log('Image Uploaded Successfully');
-            bucket.upload(req.file.path, function(err, file, apiResponse) {
+            bucket.upload(req.file.path, function (err, file, apiResponse) {
                 if (err) {
                     console.error(err);
                 } else {
-                    downloadLink(file, function(err, link) {
+                    downloadLink(file, function (err, link) {
                         if (err) {
                             console.error(err);
                         } else {
                             console.log(link);
-                            res.json({response: 200, downloadLink: link});
+                            res.json({ response: 200, downloadLink: link });
                         }
                     });
                 }
@@ -163,10 +163,10 @@ function imageUpload(uid, req, res) {
 * contactNo : phone_number_value
 * uid : Id of the user in firebase
 */
-router.post('/profile/:uid', function(req, res, next) {
+router.post('/profile/:uid', function (req, res, next) {
     const userId = req.params.uid;
     console.log('uid: ', userId);
-    rootRef.child('seller/registered/' + userId).on('value', function(snapshot) {
+    rootRef.child('seller/registered/' + userId).on('value', function (snapshot) {
         console.log(snapshot.toJSON());
         // Valid seller
         if (snapshot.exists()) {
@@ -185,9 +185,9 @@ router.post('/profile/:uid', function(req, res, next) {
 
             sellerHelper.writeSellerInfo(userId, data, (response) => {
                 if (response === 200) {
-                    res.json({Code: 200, Updated: userId, dataSent: data});
+                    res.json({ Code: 200, Updated: userId, dataSent: data });
                 } else {
-                    res.json({Code: 500});
+                    res.json({ Code: 500 });
                 }
             });
 
@@ -202,7 +202,7 @@ router.post('/profile/:uid', function(req, res, next) {
 // Image key should be profile_<uid>
 router.post('/profile/:uid/image/', (req, res, next) => {
     let uid = req.params.uid;
-    rootRef.child('seller/registered/' + uid).on('value', function(snapshot) {
+    rootRef.child('seller/registered/' + uid).on('value', function (snapshot) {
         // Valid seller
         if (snapshot.exists()) {
             imageUpload(uid, req, res);
@@ -220,14 +220,14 @@ router.post('/profile/:uid/image/', (req, res, next) => {
 router.post('/check/email', (req, res, next) => {
     let email = req.body.email;
     admin.auth().getUserByEmail(email).then(userRecord => {
-        res.json({code: 201, message: 'User already exists'});
+        res.json({ code: 201, message: 'User already exists' });
     }).catch(err => {
-        res.json({code: 200, message: 'User doesnot exists'});
+        res.json({ code: 200, message: 'User doesnot exists' });
     });
 });
 
 // API endpoint for creation of seller
-router.post('/signUp', function(req, res, next) {
+router.post('/signUp', function (req, res, next) {
     let email_ = req.body.email;
     let password_ = req.body.password;
 
@@ -235,11 +235,11 @@ router.post('/signUp', function(req, res, next) {
     admin.auth().createUser({
         email: email_,
         password: password_,
-    }).then(function(userRecord) {
-        res.json({response: 200, uid: userRecord.uid});
-    }).catch(function(error) {
+    }).then(function (userRecord) {
+        res.json({ response: 200, uid: userRecord.uid });
+    }).catch(function (error) {
         console.error(error);
-        res.json({response: 500, err: error});
+        res.json({ response: 500, err: error });
     });
 });
 
@@ -251,11 +251,11 @@ router.get('/getuid', (req, res, next) => {
     admin.auth().getUserByEmail(email)
         .then(record => {
             let uid_ = record.uid;
-            res.json({response: 200, uid: uid_});
+            res.json({ response: 200, uid: uid_ });
         })
         .catch(err => {
             console.log(err);
-            res.json({response: 500});
+            res.json({ response: 500 });
         });
 });
 
@@ -267,32 +267,32 @@ router.post('/push/seller', (req, res, next) => {
     saveData(uid, password_, err => {
         if (err) {
             console.error(err);
-            res.json({response: 500, reason: err});
+            res.json({ response: 500, reason: err });
         } else {
-            res.json({response: 200});
+            res.json({ response: 200 });
         }
     });
 });
 
 
 // API endpoint for authenticating seller
-router.post('/login', function(req, res, next) {
+router.post('/login', function (req, res, next) {
     let email_ = req.body.email;
     let password_ = req.body.password;
 
     admin.auth().getUserByEmail(email_)
-        .then(function(userRecord) {
+        .then(function (userRecord) {
             let uid = userRecord.uid;
-            rootRef.child('seller/registered/' + uid).on('value', function(snapshot) {
+            rootRef.child('seller/registered/' + uid).on('value', function (snapshot) {
                 if (snapshot.val().password === password_) {
-                    res.json({response: 200, flag: true, uid: uid});
+                    res.json({ response: 200, flag: true, uid: uid });
                 } else {
-                    res.json({response: 200, flag: false});
+                    res.json({ response: 200, flag: false });
                 }
             });
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.error('Error authenticating user ' + error);
-            res.json({response: 500});
+            res.json({ response: 500 });
         });
 });
 module.exports = router;
