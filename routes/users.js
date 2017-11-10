@@ -100,6 +100,19 @@ router.get('/seller/Info/all/:uid', (req, res, next) => {
     });
 });
 
+router.post('/update/:parameter/:uid', (req, res, next) => {
+	let uid = req.params.uid;
+	let parameter = req.params.parameter.
+    sellerHelper.updateSellerInfo(uid, parameter, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.json({code: 500});
+        } else {
+            console.log('updated details ');
+            res.json({code: 200, data: result});
+        }
+    });
+});
 
 /*
 * Function for profile image upload function for storing images using multer

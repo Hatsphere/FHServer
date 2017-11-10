@@ -27,6 +27,20 @@ var getSellerInfo = function(uid, callback) {
         callback(error);
     });
 };
+	
+var updateSellerInfo = function(uid, parameter, callback){
+	const ref=firestore.doc('seller/registered/'+ uid +'/info');
+	console.log('Data received: ', category);
+	ref.update({
+  		parameter: 'My first update',
+	}).then(() => {
+		console.log('Seller Info Updated: '+uid);
+	callback	
+  
+});
+
+	
+}
 
 module.exports = {
     writeSellerInfo: createSellerInfo,
