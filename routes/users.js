@@ -36,7 +36,7 @@ function checkDirectory(directory, callback) {
                 if (err) {
                     callback(err);
                 } else {
-                    console.log('Created profile Image');
+                    console.log('Created Directory');
                 }
             });
         } else {
@@ -53,6 +53,17 @@ checkDirectory('uploads/seller/profile/', function(error) {
         console.error(error);
     } else {
         console.log('Profile Images directory created');
+    }
+});
+
+/* Function for checking the directory for Product images
+* If it doesn't exists, it create that directory recursively
+*/
+checkDirectory('uploads/seller/product/images/', function(error) {
+    if (error) {
+        console.error(error);
+    } else {
+        console.log('Product Images directory created');
     }
 });
 
