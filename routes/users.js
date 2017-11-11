@@ -249,7 +249,58 @@ router.post('/signUp', function (req, res, next) {
     });
 });
 
+function profileUpload(uid, req, res) {
+    let profileStorage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'uploads/seller/profile/');
+        },
+        filename: function (req, file, cb) {
+            cb(null, file.fieldname + '-' + uid + '.' + file.originalname.split('.')[1]);
+        },
+    });
 
+    let profileImageEndpoint = multer({ storage: profileStorage }).single('UID');
+    profileImageEndpoint(req, res, function (err) {
+        if (err) {
+            console.error(err);
+        } else {
+            console.log('Image Uploaded Successfully');
+            bucket.upload(req.file.path, function (err, file, apiResponse) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    downloadLink(file, function (err, link) {
+                        if (err) {
+                            console.error(err);
+                        } else {
+                            console.log(link);
+                            sellerHelper.updateProfile(uid, link, err => {
+                                if (err) {
+                                    console.error(err);
+                                    res.json({response: 500});
+                                } else {
+                                    res.json({ response: 200, downloadLink: link });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+
+/**
+ * API endpoint for uploading the profile image of the user
+ */
+router.post('/seller/profile/:uid', (req, res, next) => {
+    let uid = req.params.uid;
+    profileUpload(uid, req, res);
+});
+
+/**
+ * Function to the uid from the email of the user
+ */
 router.get('/getuid', (req, res, next) => {
     let email = req.query.email;
     console.log('Email', email);

@@ -8,10 +8,11 @@ var createSellerInfo = function (uid, data, callback) {
     const ref = firestore.doc('seller/registered/' + uid + '/Info');
     console.log('Data received: ', data);
     ref.set({
-        'Name': data.Name,
-        'PlanChosen': data.PlanChosen,
-        'Address': data.Address,
-        'ContactNo': data.ContactNo
+        Name: data.Name,
+        PlanChosen: data.PlanChosen,
+        Address: data.Address,
+        ContactNo: data.ContactNo,
+        profileImage: ''
     }).then(() => {
         console.log('Seller Info updated: ' + uid);
         callback(200);
@@ -36,8 +37,25 @@ var getSellerInfo = function (uid, callback) {
     });
 };
 
+/**
+ * Function to update the profile Image property in the seller
+ * registered document reference
+ */
+var updateProfileImage = function(uid, link, callback) {
+    const ref = firestore.doc('seller/registered/' + uid + '/Info');
+    ref.update({
+        profileImage: link
+    }).then(() => {
+        console.log('Profile Image added');
+    }).catch(err => {
+        console.error(err);
+        callback(err);
+    });
+};
+
 module.exports = {
     writeSellerInfo: createSellerInfo,
-    getSellerInfo: getSellerInfo
+    getSellerInfo: getSellerInfo,
+    updateProfile: updateProfileImage
 };
 
