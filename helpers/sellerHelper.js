@@ -1,5 +1,9 @@
 var firestore = require('./firestoreHelper');
 
+/**
+* Function to create the seller information on the server
+* with the uid and data sent as parameters
+*/
 var createSellerInfo = function (uid, data, callback) {
     const ref = firestore.doc('seller/registered/' + uid + '/Info');
     console.log('Data received: ', data);
@@ -17,6 +21,10 @@ var createSellerInfo = function (uid, data, callback) {
     });
 };
 
+/**
+ * Function to fetch the seller information from the uid
+ * and send as a response to the request
+ */
 var getSellerInfo = function (uid, callback) {
     const ref = firestore.doc('seller/registered/' + uid + '/Info');
     ref.get().then(doc => {

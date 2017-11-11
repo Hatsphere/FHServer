@@ -25,7 +25,8 @@ let saveData = function (uid, password, callback) {
     });
 };
 
-/* Function for checking existence of directory or not
+/**
+* Function for checking existence of directory or not
 * directory : name or path of the directory from the present directory
 * callback : Callback function
 */
@@ -45,7 +46,8 @@ function checkDirectory(directory, callback) {
     });
 }
 
-/* Function for checking the directory for profile images
+/**
+* Function for checking the directory for profile images
 * If it doesn't exists, it create that directory recursively
 */
 checkDirectory('uploads/seller/profile/', function (error) {
@@ -82,7 +84,8 @@ function downloadLink(file, callback) {
 }
 
 
-/* API endpoint for fetching the details of a particular seller
+/**
+* API endpoint for fetching the details of a particular seller
 * GET method
 * api url: /seller/info/all/<UID_of_user>
 * return (correct): Block of seller in json
@@ -114,7 +117,7 @@ router.post('/update/:parameter/:uid', (req, res, next) => {
         });
 });
 
-/*
+/**
 * Function for profile image upload function for storing images using multer
 * Image saved will get uploaded to firebase storage using google-storage.
 * Key file name for the multi part request should be profile_<UID_of_user>
@@ -155,7 +158,8 @@ function imageUpload(uid, req, res) {
     });
 }
 
-/* API endpoint for creating profile of the seller
+/**
+* API endpoint for creating profile of the seller
 * Json contains:
 * name: name_value
 * planId: plan_value
@@ -198,8 +202,9 @@ router.post('/profile/:uid', function (req, res, next) {
     });
 });
 
-// API endpoint for sending seller image
-// Image key should be profile_<uid>
+/** API endpoint for sending seller image
+ * Image key should be profile_<uid>
+ */
 router.post('/profile/:uid/image/', (req, res, next) => {
     let uid = req.params.uid;
     rootRef.child('seller/registered/' + uid).on('value', function (snapshot) {
@@ -210,13 +215,14 @@ router.post('/profile/:uid/image/', (req, res, next) => {
     });
 });
 
-/* API endpoint for checking existence of user
-* Checks the email id exists or not.
-* POST: {
-    email: "Email of the user"
-  }
-* returns the existence of user in the database  
-*/
+/**
+ * API endpoint for checking existence of user
+ * Checks the email id exists or not.
+ * POST: {
+ *  email: "Email of the user"
+ * }
+ * returns the existence of user in the database  
+ */
 router.post('/check/email', (req, res, next) => {
     let email = req.body.email;
     admin.auth().getUserByEmail(email).then(userRecord => {

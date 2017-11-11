@@ -6,14 +6,15 @@ const multer = require('multer');
 
 let firestore = require('../helpers/firestoreHelper');
 
-/* API for sending the products info (only the textual based details)
-* {
-    pName: <Product Name>,
-    pPrice: <Product Price>,
-    pDescription: <Product Description>,
-    pClass: <Product Class>
-}
-*/
+/**
+ *  API for sending the products info (only the textual based details)
+ *  {
+ *  pName: <Product Name>,
+ *  pPrice: <Product Price>,
+ *  pDescription: <Product Description>,
+ *  pClass: <Product Class>
+ * }
+ */
 router.post('/send/:uid', (req, res, next) => {
     let uid = req.params.uid;
 
@@ -71,7 +72,7 @@ function downloadLink(file, callback) {
 }
 
 
-/*
+/**
 * API endpoint for uploading the images of product on the server
 */
 router.post('/send/image/:uid/:pName', (req, res, next) => {
