@@ -5,7 +5,7 @@ var firestore = require('./firestoreHelper');
 * with the uid and data sent as parameters
 */
 var createSellerInfo = function (uid, data, callback) {
-    const ref = firestore.doc('seller/registered/' + uid + '/Info');
+    const ref = firestore.doc('seller/registered/Info/' + uid);
     console.log('Data received: ', data);
     ref.set({
         Name: data.Name,
@@ -27,7 +27,7 @@ var createSellerInfo = function (uid, data, callback) {
  * and send as a response to the request
  */
 var getSellerInfo = function (uid, callback) {
-    const ref = firestore.doc('seller/registered/' + uid + '/Info');
+    const ref = firestore.doc('seller/registered/Info/' + uid);
     ref.get().then(doc => {
         const result = doc.data();
         console.log('Results received: ', result);
@@ -42,7 +42,7 @@ var getSellerInfo = function (uid, callback) {
  * registered document reference
  */
 var updateProfileImage = function(uid, link, callback) {
-    const ref = firestore.doc('seller/registered/' + uid + '/Info');
+    const ref = firestore.doc('seller/registered/Info/' + uid);
     ref.update({
         profileImage: link
     }).then(() => {
@@ -53,9 +53,22 @@ var updateProfileImage = function(uid, link, callback) {
     });
 };
 
+/**
+ * Function to update the seller information
+ */
+var updateSellerInfo = function(uid, field, value, callback) {
+    const ref = firestore.doc('seller/registered/Info/' + uid);
+    ref.update({
+        field: value
+    }).then(() => {
+        console.log('Field updated', field);
+    }).catch(err => callback(err));
+};
+
 module.exports = {
     writeSellerInfo: createSellerInfo,
     getSellerInfo: getSellerInfo,
-    updateProfile: updateProfileImage
+    updateProfile: updateProfileImage,
+    updateSeller: updateSellerInfo
 };
 
