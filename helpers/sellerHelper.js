@@ -1,6 +1,6 @@
 var firestore = require('./firestoreHelper');
 
-var createSellerInfo = function(uid, data, callback) {
+var createSellerInfo = function (uid, data, callback) {
     const ref = firestore.doc('seller/registered/' + uid + '/Info');
     console.log('Data received: ', data);
     ref.set({
@@ -17,7 +17,7 @@ var createSellerInfo = function(uid, data, callback) {
     });
 };
 
-var getSellerInfo = function(uid, callback) {
+var getSellerInfo = function (uid, callback) {
     const ref = firestore.doc('seller/registered/' + uid + '/Info');
     ref.get().then(doc => {
         const result = doc.data();
@@ -27,20 +27,6 @@ var getSellerInfo = function(uid, callback) {
         callback(error);
     });
 };
-	
-var updateSellerInfo = function(uid, parameter, callback){
-	const ref=firestore.doc('seller/registered/'+ uid +'/info');
-	console.log('Data received: ', category);
-	ref.update({
-  		parameter: 'My first update',
-	}).then(() => {
-		console.log('Seller Info Updated: '+uid);
-	callback	
-  
-});
-
-	
-}
 
 module.exports = {
     writeSellerInfo: createSellerInfo,

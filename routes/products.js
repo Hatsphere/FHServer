@@ -26,36 +26,32 @@ router.post('/send/:uid', (req, res, next) => {
     let pSale = req.body.pSale;
 
     let obj = {
-        'Name': pName,
-        'Price': pPrice,
-        'Description': pDescription,
-        'Sale': pSale,
-        'Availability': true,
-        'Class': pClass,
+        Name: pName,
+        Price: pPrice,
+        Description: pDescription,
+        Sale: pSale,
+        Availability: true,
+        Class: pClass,
+        Images: {
+            primaryImage: '',
+            leftImage: '',
+            rightImage: ''
+        }
     };
 
     console.log('Object received', obj);
 
     // datastore reference for item
-    let productRef = firestore.collection('products');
+    let productRef = firestore.doc(uid + '/Products/Info/' + pName);
 
-    productRef.doc(uid).collection(pName).doc('Info').set(obj)
+    productRef.set(obj)
         .then(() => {
             console.log('Product added');
-            productRef.doc(uid).collection(pName).doc('Images').set({
-                primaryImage: '',
-                leftImage: '',
-                rightImage: ''
-            }).then(() => {
-                console.log('Dummy image data created');
-                res.json({ response: 200, data: req.body });
-            }).catch(err => {
-                console.error(err);
-                res.json({ response: 200, data: req.body });
-            });
+            res.json({ response: 200, data: req.body });
         })
         .catch(err => {
             console.error(err);
+            res.json({response: 500});
         });
 
 });
@@ -92,8 +88,8 @@ router.post('/send/image/:uid/:pName', (req, res, next) => {
 
     let productImageEndpoint = multer({ storage: productStorage }).array(uid, 10);
     const productBucket = storage.bucket();
-    let productRef = firestore.collection('products').doc(uid).collection(pName).doc('Images');
-    
+    let productRef = firestore.doc(uid + '/Products/Info/' + pName);
+
     productImageEndpoint(req, res, err => {
         if (err) {
             console.error(err);
@@ -116,16 +112,16 @@ router.post('/send/image/:uid/:pName', (req, res, next) => {
                                 console.log('Download link generated', link);
                                 if (i === 0) {
                                     productRef.update({
-                                        primaryImage: link
+                                        'Images.primaryImage' : link
                                     }).then(() => {
                                         console.log('Image saved');
                                     }).catch(err => {
                                         console.error(err);
                                     });
-                                
+
                                 } else {
                                     productRef.update({
-                                        leftImage: link
+                                        'Images.leftImage': link
                                     }).then(() => {
                                         console.log('Image saved');
                                     }).catch(err => {
