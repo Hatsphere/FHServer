@@ -2,6 +2,7 @@ let express = require('express');
 let admin = require('../helpers/firebaseAdmin');
 let storage = admin.storage();
 let router = express.Router();
+let sellerHelper = require('../helpers/sellerHelper')
 const multer = require('multer');
 
 let firestore = require('../helpers/firestoreHelper');
@@ -44,17 +45,61 @@ router.post('/send/:uid', (req, res, next) => {
 
     // datastore reference for item
     let productRef = firestore.doc(uid + '/Products/Info/' + pName);
+    let cateogryRef = firestore.collection(pClass)
 
     productRef.set(obj)
         .then(() => {
             console.log('Product added');
-            res.json({ response: 200, data: req.body });
+            sellerHelper.getSellerInfo(uid, (err, res) => {
+                if (err) {
+                    console.error(err)
+                } else {
+                    let planId = res.PlanChosen
+                    cateogryRef.doc(pName)
+                        .set({
+                            uid: uid,
+                            planId: planId
+                        })
+                        .then(() => {
+                            console.log('Cateogry added', pName)
+                        })
+                        .catch(err => console.error(err))
+                }
+            })
+            res.json({response: 200, data: req.body});
         })
         .catch(err => {
             console.error(err);
             res.json({response: 500});
         });
 
+});
+
+/**
+ * API Endpoint for getting all products of a seller
+ */
+router.get('/all/:uid', (req, res, next) => {
+    let uid = req.params.uid
+    let sellerRef = firestore.collection(uid + '/Products/Info')
+
+    sellerRef.get()
+        .then(snapshot => {
+            console.log('Getting data for ', uid)
+            res.json(snapshot.data())
+        })
+})
+
+/**
+ * API Endpoint for getting all the cateogries of product
+ */
+router.get('/getcateogry', (req, res, next) => {
+    let cateogryRef = firestore.doc('Cateogries/Details');
+    cateogryRef.get()
+        .then(snapShot => {
+            let cateogries = snapShot.data()
+            console.log(cateogries)
+            res.json(snapShot.data())
+        })
 });
 
 // Function for generation of download link using file
@@ -73,8 +118,8 @@ function downloadLink(file, callback) {
 
 
 /**
-* API endpoint for uploading the images of product on the server
-*/
+ * API endpoint for uploading the images of product on the server
+ */
 router.post('/send/image/:uid/:pName', (req, res, next) => {
     let uid = req.params.uid;
     let pName = req.params.pName;
@@ -87,7 +132,7 @@ router.post('/send/image/:uid/:pName', (req, res, next) => {
         },
     });
 
-    let productImageEndpoint = multer({ storage: productStorage }).array(uid, 10);
+    let productImageEndpoint = multer({storage: productStorage}).array(uid, 10);
     const productBucket = storage.bucket();
     let productRef = firestore.doc(uid + '/Products/Info/' + pName);
 
@@ -103,17 +148,17 @@ router.post('/send/image/:uid/:pName', (req, res, next) => {
                 productBucket.upload(path, (err, file, apiResponse) => {
                     if (err) {
                         console.error(err);
-                        res.json({ response: 500 });
+                        res.json({response: 500});
                     } else {
                         downloadLink(file, (err, link) => {
                             if (err) {
                                 console.error('Download link not generated');
-                                res.json({ response: 500 });
+                                res.json({response: 500});
                             } else {
                                 console.log('Download link generated', link);
                                 if (i === 0) {
                                     productRef.update({
-                                        'Images.primaryImage' : link
+                                        'Images.primaryImage': link
                                     }).then(() => {
                                         console.log('Image saved');
                                     }).catch(err => {
@@ -134,7 +179,7 @@ router.post('/send/image/:uid/:pName', (req, res, next) => {
                     }
                 });
             }
-            res.json({ response: 200 });
+            res.json({response: 200});
         }
     });
 });
