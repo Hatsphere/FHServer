@@ -116,6 +116,18 @@ function downloadLink(file, callback) {
     });
 }
 
+/**
+ * API Endpoint for deleting a product
+ * This will delete a selected product from the document reference from the 
+ * database (firestore)
+ */
+router.post('/delete', (req, res, next) => {
+    let key = req.body.productKey
+    let productRef = firestore.doc(uid + '/Products/Info/' + key);
+    productRef.delete()
+        .then(() => res.json({response: 200}))
+        .catch(err => res.json({response: 500}))
+})
 
 /**
  * API endpoint for uploading the images of product on the server
