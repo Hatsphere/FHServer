@@ -85,7 +85,12 @@ router.get('/all/:uid', (req, res, next) => {
     sellerRef.get()
         .then(snapshot => {
             console.log('Getting data for ', uid)
-            res.json(snapshot.data())
+            let response = {}
+            snapshot.forEach(doc => {
+                console.log(doc.id, '=>', doc.data());
+                response[doc.id] = doc.data()
+            });    
+            res.json(response)
         })
 })
 
