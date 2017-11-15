@@ -76,6 +76,21 @@ router.post('/send/:uid', (req, res, next) => {
 });
 
 /**
+ * API Endpoint for getting all the cateogries of the 
+ * products on the website
+ */
+router.get('/all/cateogry', (req, res, next) => {
+    let cateogryref = firestore.doc('Cateogries/Details')
+    
+    cateogryref.get()
+        .then(snapshot => {
+            console.log(snapshot.data())
+            res.json(snapshot.data())
+        })
+        .catch(err => res.json({response: 500}))
+})
+
+/**
  * API Endpoint for getting all products of a seller
  */
 router.get('/all/:uid', (req, res, next) => {
