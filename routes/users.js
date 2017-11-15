@@ -317,16 +317,16 @@ function profileUpload(uid, req, res) {
                     downloadLink(file, function (err, link) {
                         if (err) {
                             console.error(err);
+                            res.json({ response: 500 })
                         } else {
                             console.log(link);
                             sellerHelper.updateProfileImage(uid, link, err => {
                                 if (err) {
                                     console.error(err);
                                     res.json({ response: 500 });
-                                } else {
-                                    res.json({ response: 200, downloadLink: link });
                                 }
                             });
+                            res.json({ response: 200, downloadLink: link });                            
                         }
                     });
                 }
