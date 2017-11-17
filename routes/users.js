@@ -250,8 +250,8 @@ router.post('/change/password', (req, res, next) => {
  * API endpoint for deleting the user data
  * taking uid from the ref and deleting.
  */
-router.get('/deleteUser', function (req, res, next) {
-    let uid = req.param.uid;
+router.get('/deleteUser/:uid', function (req, res, next) {
+    let uid = req.params.uid;
     let del_ref = admin.database().ref('seller/registered/' + uid);
     del_ref.remove()
         .then(function () {
