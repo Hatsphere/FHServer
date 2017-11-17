@@ -239,11 +239,28 @@ router.post('/change/password', (req, res, next) => {
                         }).then(userRecord => {
                             console.log('Successfully updated user Record: ', userRecord.toJSON())
                         }).catch(err => console.error('Error updating the user: ', err))
-                        res.json({response: 200})
+                        res.json({ response: 200 })
                     })
-                    .catch(err => res.json({response: 500}))
+                    .catch(err => res.json({ response: 500 }))
             }
         })
+});
+
+/** 
+ * API endpoint for deleting the user data
+ * taking uid from the ref and deleting.
+ */
+router.get('/deleteUser', function (req, res, next) {
+    let uid = req.param.uid;
+    let del_ref = admin.database().ref('seller/registered/' + uid);
+    del_ref.remove()
+        .then(function () {
+            res.send({ response: 200, status: 'DELETED' });
+        })
+        .catch(function (error) {
+            console.log('Error deleting data:', error);
+            res.send({ response: 500, status: 'error', error: error });
+        });
 });
 
 /**
@@ -326,7 +343,7 @@ function profileUpload(uid, req, res) {
                                     res.json({ response: 500 });
                                 }
                             });
-                            res.json({ response: 200, downloadLink: link });                            
+                            res.json({ response: 200, downloadLink: link });
                         }
                     });
                 }
