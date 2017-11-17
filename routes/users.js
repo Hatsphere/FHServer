@@ -246,6 +246,24 @@ router.post('/change/password', (req, res, next) => {
         })
 });
 
+/** 
+	* Code for deleting the user data
+	* taking uid from the ref and deleting.
+*/
+
+router.get('/delete_category', function(req, res, next) {
+  var uid = req.param.uid;
+  let del_ref = admin.database().ref('seller/registered/' + userId);
+  del_ref.remove()
+    .then(function() {
+      res.send({ status: 'ok' });
+    })
+    .catch(function(error) {
+      console.log('Error deleting data:', error);
+      res.send({ status: 'error', error: error });
+    });
+});
+
 /**
  * API endpoint for sending seller image
  * Image key should be profile_<uid>
