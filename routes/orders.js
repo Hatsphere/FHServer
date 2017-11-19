@@ -2,7 +2,6 @@ let express = require('express');
 let router = express.Router();
 
 let firestore = require('../helpers/firestoreHelper');
-let batch = firestore.batch()
 
 /**
  * API Endpoint for getting all the orders
@@ -32,10 +31,24 @@ router.get('/all/:uid', (req ,res, next) => {
  * placed instance
  */
 router.post('/accept', (req, res, next) => {
-    let orderId = req.body.orderId
-    let sellerId = req.body.sellerId
+    let order = req.body.order
+    let sellerId = order['sellerId']
+    let timeStamp = req.body.timeStamp
+    let acceptOrder = order
+    acceptOrder['completedTimeStamp'] = timeStamp
 
-    let orderRef = firestore.doc(sellerId + '/orders/waiting/' + orderId)
+    console.log(order)
+
+    let batch = firestore.batch()
+    let orderRef = firestore.doc(sellerId + '/orders/waiting/' + order['order_id'])
+    let acceptRef = firestore.doc(sellerId + '/orders/accept/' + order['order_id'])
+
+    batch.delete(orderRef)
+    batch.set(acceptRef, acceptOrder)
+
+    batch.commit().then(() => {
+        res.json({response: 200, status: 'accepted'})
+    }).catch(err => res.json({response: 500}))
     
 })
 

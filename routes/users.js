@@ -402,16 +402,20 @@ router.post('/login', function (req, res, next) {
 
     admin.auth().getUserByEmail(email_)
         .then(function (userRecord) {
-            let uid = userRecord.uid;
-            rootRef
-                .child('seller/registered/' + uid)
-                .on('value', function (snapshot) {
-                    if (snapshot.val().password === password_) {
-                        res.json({ response: 200, flag: true, uid: uid });
-                    } else {
-                        res.json({ response: 200, flag: false });
-                    }
-                });
+            if (userRecord != null) {
+                let uid = userRecord.uid;
+                rootRef
+                    .child('seller/registered/' + uid)
+                    .on('value', function (snapshot) {
+                        if (snapshot.val().password === password_) {
+                            res.json({ response: 200, flag: true, uid: uid });
+                        } else {
+                            res.json({ response: 200, flag: false });
+                        }
+                    });
+            } else {
+                res.json({ response: 500 })
+            }
         })
         .catch(function (error) {
             console.error('Error authenticating user ' + error);

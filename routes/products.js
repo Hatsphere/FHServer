@@ -45,11 +45,19 @@ router.post('/send/:uid', (req, res, next) => {
 
     // datastore reference for item
     let productRef = firestore.doc(uid + '/Products/Info/' + pName);
+    let countref = firestore.doc(uid + '/count/Info/' + pName);
     let cateogryRef = firestore.collection(pClass)
 
     productRef.set(obj)
         .then(() => {
             console.log('Product added');
+
+            countref.set({
+                itemSold: 0
+            }).then(() => {
+                console.log('Count added');
+            }).catch(err => console.error(err));
+
             sellerHelper.getSellerInfo(uid, (err, res) => {
                 if (err) {
                     console.error(err)
