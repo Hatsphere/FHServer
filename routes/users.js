@@ -255,8 +255,9 @@ router.get('/deleteUser/:uid', function (req, res, next) {
     let del_ref = admin.database().ref('seller/registered/' + uid);
     del_ref.remove()
         .then(function () {
-            res.send({ response: 200, status: 'DELETED' });
+            return admin.auth().deleteUser(uid)
         })
+        .then(() => res.json({response: 200, status: 'DELETED'}))
         .catch(function (error) {
             console.log('Error deleting data:', error);
             res.send({ response: 500, status: 'error', error: error });
