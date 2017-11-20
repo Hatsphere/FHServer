@@ -151,6 +151,8 @@ function downloadLink(file, callback) {
  */
 router.post('/delete', (req, res, next) => {
     let key = req.body.productKey
+    let uid = req.body.uid
+    console.log(key)
     let productRef = firestore.doc(uid + '/Products/Info/' + key);
     productRef.delete()
         .then(() => res.json({response: 200}))
