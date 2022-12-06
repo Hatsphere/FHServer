@@ -7,11 +7,11 @@
   },
   "dependencies": {
     "@google-cloud/firestore": "^0.8.2",
-    "body-parser": "~1.17.1",
+    "body-parser": "~1.20.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "eslint": "^4.9.0",
-    "express": "~4.15.2",
+    "express": "~4.15.5",
     "express-sessions": "^1.0.6",
     "fast-crc32c": "^1.0.4",
     "firebase-admin": "^5.3.0",
